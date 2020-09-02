@@ -80,7 +80,8 @@ p <- ggplot(plot_data, aes(x=reorder(State, n), y=n)) +
     coord_flip() +
     ylab('Number of Companies') +
     xlab('State') + 
-    ggtitle('Count of Fastest Growing Companyies by State')
+    ggtitle('Count of Fastest Growing Companyies by State') +
+    theme_minimal()
 
 p
 ```
@@ -98,7 +99,8 @@ state_3 <- df %>%
 
 p <- ggplot(state_3, aes(x=reorder(Industry, Employees), y=Employees)) +
   geom_boxplot() + 
-  coord_flip()
+  coord_flip() +
+  theme_minimal()
 
 p
 ```
@@ -120,8 +122,8 @@ p <- ggplot(rev_empl, aes(x=reorder(Industry, rpe), y=rpe)) +
   coord_flip() +
   xlab('Industry') +
   ylab('Revenue per Employee') + 
-  ggtitle('Revenue/Employee by Industry (outliers removed)')
-
+  ggtitle('Revenue/Employee by Industry (outliers removed)') +
+  theme_minimal()
 p
 ```
 
