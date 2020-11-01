@@ -198,6 +198,10 @@
                 let name    = e.currentTarget;
                 let pres_id = name.getAttribute("data-name");
 
+                $('html,body').animate({
+                   scrollTop: $("#part3").offset().top
+                }, 'slow');
+
                 $('#p3_pres_name').text(president_data[pres_id].Name);
                 $('#p3_pres_height').text(president_data[pres_id]['Height'] + '"');
                 $('#p3_pres_weight').text(president_data[pres_id]['Weight'] + 'lbs');
@@ -395,7 +399,7 @@
         <div id="p2_output"></div>
     </div>
 </div>
-<div class="row">
+<div class="row" id="part3">
     <div class="col-md-12">
         <hr/>
         <h3>Part III - Presidential Physique</h3>
