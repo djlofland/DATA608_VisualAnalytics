@@ -6,27 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DS608 Module 5 (DJLofland)</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
-            integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+            integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+            integrity="sha512-oc9+XSs1H243/FRN9Rw62Fn8EtxjEYWHXRvjS43YtueEewbS6ObfXcJNyohjHqVKFPoXXUxwc+q1K7Dee6vv9g=="
             crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
             integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js"
-            integrity="sha512-C2RveGuPIWqkaLAluvoxyiaN1XYNe5ss11urhZWZYBUA9Ydgj+hfGKPcxCzTwut1/fmjEZR7Ac35f2aycT8Ogw=="
-            crossorigin="anonymous"></script>
-
     <style>
         body {
             margin: 20px;
         }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+            integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+            integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.bundle.min.js"
+            integrity="sha512-iceXjjbmB2rwoX93Ka6HAHP+B76IY1z0o3h+N1PeDtRSsyeetU3/0QKJqGyPJcX63zysNehggFwMC/bi7dvMig=="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js"
+            integrity="sha512-C2RveGuPIWqkaLAluvoxyiaN1XYNe5ss11urhZWZYBUA9Ydgj+hfGKPcxCzTwut1/fmjEZR7Ac35f2aycT8Ogw=="
+            crossorigin="anonymous"></script>
 
     <script>
        var president_data = [];
@@ -194,28 +199,28 @@
                 let pres_id = name.getAttribute("data-name");
 
                 $('#p3_pres_name').text(president_data[pres_id].Name);
-                $('#p3_pres_height').text(president_data[pres_id]['Height']);
-                $('#p3_pres_weight').text(president_data[pres_id]['Weight']);
+                $('#p3_pres_height').text(president_data[pres_id]['Height'] + '"');
+                $('#p3_pres_weight').text(president_data[pres_id]['Weight'] + 'lbs');
 
                 // Add  line on the chart to show where the president falls
                 d3.select("#pres_height_line").remove();
 
-                let x_h = chart_width * (president_data[pres_id]['Height'] - 60) / (80-60)
+                let x_h = chart_width * (president_data[pres_id]['Height'] - 60) / (80 - 60)
 
                 hch_svg.append("line")
-                   .attr("x1", x_h)
-                   .attr("y1", 0)
-                   .attr("x2", x_h)
-                   .attr("y2", chart_height)
-                   .attr('id', 'pres_height_line')
-                   .style("stroke-width", 2)
-                   .style("stroke", "red")
-                   .style("fill", "none");
+                       .attr("x1", x_h)
+                       .attr("y1", 0)
+                       .attr("x2", x_h)
+                       .attr("y2", chart_height)
+                       .attr('id', 'pres_height_line')
+                       .style("stroke-width", 2)
+                       .style("stroke", "red")
+                       .style("fill", "none");
 
                 // Add  line on the chart to show where the president falls
                 d3.select("#pres_weight_line").remove();
 
-                let x_w = chart_width * (president_data[pres_id]['Weight'] - 100) / (350-100)
+                let x_w = chart_width * (president_data[pres_id]['Weight'] - 100) / (350 - 100)
 
                 wch_svg.append("line")
                        .attr("x1", x_w)
@@ -334,7 +339,8 @@
 
 <h1>DS 608 (Fall 2020): Module 5</h1>
 <h2>Donny Lofland</h2>
-<p>Source Code: <a href="https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5">https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5</a></p>
+<p>Source Code: <a href="https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5">https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5</a>
+</p>
 
 <div class="row">
     <div class="col-md-12">
@@ -401,21 +407,25 @@
 <div class="row">
     <div class="col-md-4">
         <div class="row">
-            <div class="dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="p3_input" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="true">
-                    Choose a President ...
-                    <span class="caret"></span>
-                </button>
-                <ul id="p3_input_dd" class="dropdown-menu" aria-labelledby="p3_input">
-                </ul>
+            <div class="col-md-12">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="p3_input" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="true">
+                        Choose a President ...
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="p3_input_dd" class="dropdown-menu" aria-labelledby="p3_input">
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="row">
-            <hr/>
-            <p>President: <b><span id="p3_pres_name"></span></b></p>
-            <p>&nbsp;&nbsp;&nbsp;Height: <b><span id="p3_pres_height"></span></b></p>
-            <p>&nbsp;&nbsp;&nbsp;Weight: <b><span id="p3_pres_weight"></span></b></p>
+            <div class="col-md-12">
+                <hr/>
+                <p>President: <b><span id="p3_pres_name"></span></b></p>
+                <p>&nbsp;&nbsp;&nbsp;Height: <b><span id="p3_pres_height"></span></b></p>
+                <p>&nbsp;&nbsp;&nbsp;Weight: <b><span id="p3_pres_weight"></span></b></p>
+            </div>
         </div>
     </div>
     <div class="col-md-8">
@@ -431,5 +441,6 @@
         </div>
     </div>
 </div>
+
 </body>
 </html>
