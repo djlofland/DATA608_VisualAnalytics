@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DS608 Module 5 (DJLofland)</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+            integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+            crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+            integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.2.0/d3.min.js"
+            integrity="sha512-C2RveGuPIWqkaLAluvoxyiaN1XYNe5ss11urhZWZYBUA9Ydgj+hfGKPcxCzTwut1/fmjEZR7Ac35f2aycT8Ogw=="
+            crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            margin: 20px;
+        }
+    </style>
+
+    <script>
+       var president_data = [];
+
+       $(document).ready(function () {
+          // =====================================================================
+          // Part I Button Listener - reverse test
+          // =====================================================================
+          $('#p1_button').on('click', function () {
+             let in_str  = $("#p1_input").val();
+             let out_str = in_str.split("").reverse().join("");
+             $("#p1_output").val(out_str);
+          });
+
+          // =====================================================================
+          // Part II Button Listener - calculate multiples table
+          // =====================================================================
+          $('#p2_button').on('click', function () {
+             let in_str = parseFloat($("#p2_input").val());
+
+             $('#p2_output').empty();
+
+             let table = d3.select('#p2_output').append('table');
+             table.id  = 'p2_multiples_tbl';
+             table.style('border', '1px solid black');
+
+             // $('#' + table.id).css('border', '1px solid black;');
+
+             for (let r = 0; r <= 3; r++) {
+                let row = table.append('tr');
+
+                for (let c = 1; c <= 5; c++) {
+                   let cell = row.append('td').text(in_str * (c + (r * 5)));
+                   cell.id  = 'p2_' + r + '_' + c;
+                   cell.style('border', '1px solid black');
+                   cell.style('padding', '10px');
+                   // $("#" + cell.id).css('padding', '10px');
+                }
+             }
+          });
+
+          // set the dimensions and margins of the graph
+          let chart_margins = {top: 50, right: 40, bottom: 50, left: 30},
+              chart_width   = 250 - chart_margins.left - chart_margins.right,
+              chart_height  = 300 - chart_margins.top - chart_margins.bottom;
+
+          // ---------------------------------------------------------------
+          // Setup Height Chart
+          // ---------------------------------------------------------------
+
+          // X scale and Axis
+          let hch_x = d3.scaleLinear()
+                        .domain([60, 80])         // This is the min and the max of the data: 0 to 100 if percentages
+                        .range([0, chart_width]);       // This is the corresponding value I want in Pixel
+
+          // Y axis: scale and draw:
+          let hch_y = d3.scaleLinear()
+                        .range([chart_height, 0]);
+
+          // set the parameters for the histogram
+          var hch_hist = d3.bin()
+                           .value(function (d) {
+                              return d['Height'];
+                           })
+                           .domain(hch_x.domain())
+                           .thresholds(hch_x.ticks(20));
+
+          // append the svg object to the body of the page
+          var hch_svg = d3.select("#p3_hch_chart")
+                          .append("svg")
+                          .attr("width", chart_width + chart_margins.left + chart_margins.right)
+                          .attr("height", chart_height + chart_margins.top + chart_margins.bottom)  // translate this svg element to leave some margin.
+                          .append("g")
+                          .attr("transform", "translate(" + chart_margins.left + "," + chart_margins.top + ")");
+
+          hch_svg.append("text")
+                 .attr("x", (chart_width / 2))
+                 .attr("y", 0 - (chart_margins.top / 2))
+                 .attr("text-anchor", "middle")
+                 .style("font-size", "16px")
+                 .text("Presidential Heights Histogram");
+
+          // ---------------------------------------------------------------
+          // Setup Weight Chart
+          // ---------------------------------------------------------------
+
+          // X axis: scale and draw:
+          let wch_x = d3.scaleLinear()
+                        .domain([100, 350])     // can use this instead of 1000 to have the max of data: d3.max(data, function(d) { return +d.price })
+                        .range([0, chart_width]);
+
+          // Y axis: scale and draw:
+          let wch_y = d3.scaleLinear()
+                        .range([chart_height, 0]);
+
+          // set the parameters for the histogram
+          let wch_hist = d3.histogram()
+                           .value(function (d) {
+                              return d['Weight'];
+                           })
+                           .domain(wch_x.domain())
+                           .thresholds(wch_x.ticks(20));
+
+          // append the svg object to the body of the page
+          let wch_svg = d3.select("#p3_wch_chart")
+                          .append("svg")
+                          .attr("width", chart_width + chart_margins.left + chart_margins.right)
+                          .attr("height", chart_height + chart_margins.top + chart_margins.bottom)  // translate this svg element to leave some margin.
+                          .append("g")
+                          .attr("transform", "translate(" + chart_margins.left + "," + chart_margins.top + ")");
+
+          wch_svg.append("text")
+                 .attr("x", (chart_width / 2))
+                 .attr("y", 0 - (chart_margins.top / 2))
+                 .attr("text-anchor", "middle")
+                 .style("font-size", "16px")
+                 .text("Presidential Weights Histogram");
+
+          // =====================================================================
+          // Part III Setup - Presidents
+          // =====================================================================
+          // LOAD Data and Set everything up
+          d3.csv("data/presidents.csv").then(function (data) {
+
+             president_data = data;
+
+             var heightArray = data.map(function (d) {
+                return d['Height'];
+             });
+             var weightArray = data.map(function (d) {
+                return d['Weight'];
+             });
+
+             // ---------------------------------------------------------------
+             // Build DropDown
+             // ---------------------------------------------------------------
+             let hch_min = d3.min(data, function (d) {
+                return d['Height']
+             })
+             let hch_max = d3.max(data, function (d) {
+                return d['Height']
+             })
+             let wch_min = d3.min(data, function (d) {
+                return d['Weight']
+             })
+             let wch_max = d3.max(data, function (d) {
+                return d['Weight']
+             })
+
+             // ---------------------------------------------------------------
+             // Build DropDown
+             // ---------------------------------------------------------------
+             let dd = $('#p3_input_dd')
+
+             for (let i = 0; i < data.length; i++) {
+                let opt = data[i].Name;
+                dd.append('<li><a class="p3_dd_item" href="#" data-name="' + i + '">' + opt + '</a></li>');
+             }
+
+             // ---------------------------------------------------------------
+             // Add callback to dropdown
+             // ---------------------------------------------------------------
+             $('.p3_dd_item').click(function (e) {
+                let name    = e.currentTarget;
+                let pres_id = name.getAttribute("data-name");
+
+                $('#p3_pres_name').text(president_data[pres_id].Name);
+                $('#p3_pres_height').text(president_data[pres_id]['Height']);
+                $('#p3_pres_weight').text(president_data[pres_id]['Weight']);
+
+                // Add  line on the chart to show where the president falls
+                d3.select("#pres_height_line").remove();
+
+                let x_h = chart_width * (president_data[pres_id]['Height'] - 60) / (80-60)
+
+                hch_svg.append("line")
+                   .attr("x1", x_h)
+                   .attr("y1", 0)
+                   .attr("x2", x_h)
+                   .attr("y2", chart_height)
+                   .attr('id', 'pres_height_line')
+                   .style("stroke-width", 2)
+                   .style("stroke", "red")
+                   .style("fill", "none");
+
+                // Add  line on the chart to show where the president falls
+                d3.select("#pres_weight_line").remove();
+
+                let x_w = chart_width * (president_data[pres_id]['Weight'] - 100) / (350-100)
+
+                wch_svg.append("line")
+                       .attr("x1", x_w)
+                       .attr("y1", 0)
+                       .attr("x2", x_w)
+                       .attr("y2", chart_height)
+                       .attr('id', 'pres_weight_line')
+                       .style("stroke-width", 2)
+                       .style("stroke", "red")
+                       .style("fill", "none");
+             });
+
+             // ---------------------------------------------------------------
+             // Add our Height Chart to the page
+             // ---------------------------------------------------------------
+
+             // And apply this function to data to get the bins
+             let hch_bins = hch_hist(data);
+
+             // Scale the range of the data in the y domain
+             hch_y.domain([0, d3.max(hch_bins, function (d) {
+                return d.length;
+             })]);
+
+             // append the bar rectangles to the svg element
+             hch_svg.selectAll("rect")
+                    .data(hch_bins)
+                    .enter().append("rect")
+                    .attr("fill", "steelblue")
+                    .attr("class", "bar")
+                    .attr("x", 1)
+                    .attr("transform", function (d) {
+                       return "translate(" + hch_x(d.x0) + "," + hch_y(d.length) + ")";
+                    })
+                    .attr("width", function (d) {
+                       return (hch_x(d.x1) - hch_x(d.x0) - 1 >= 0) ? (hch_x(d.x1) - hch_x(d.x0) - 1) : 0;
+                    })
+                    .attr("height", function (d) {
+                       return chart_height - hch_y(d.length);
+                    });
+
+
+             // add the x axis
+             hch_svg.append('g')
+                    .attr("transform", "translate(0," + chart_height + ")")
+                    .call(d3.axisBottom(hch_x));
+
+             // text label for the x axis
+             hch_svg.append("text")
+                    .attr("transform",
+                       "translate(" + (chart_width / 2) + " ," +
+                       (chart_height + chart_margins.top + 30) + ")")
+                    .style("text-anchor", "middle")
+                    .text("Height (in)");
+
+             // add the y Axis
+             hch_svg.append("g")
+                    .call(d3.axisLeft(hch_y));
+
+             // ---------------------------------------------------------------
+             // Add our Weight Chart to the page
+             // ---------------------------------------------------------------
+
+             // And apply this function to data to get the bins
+             let wch_bins = wch_hist(data);
+
+             wch_y.domain([0, d3.max(wch_bins, function (d) {
+                return d.length;
+             })]);
+
+             // append the bar rectangles to the svg element
+             wch_svg.selectAll("rect")
+                    .data(wch_bins)
+                    .enter().append("rect")
+                    .attr("fill", "steelblue")
+                    .attr("class", "bar")
+                    .attr("x", 1)
+                    .attr("transform", function (d) {
+                       return "translate(" + wch_x(d.x0) + "," + wch_y(d.length) + ")";
+                    })
+                    .attr("width", function (d) {
+                       return (wch_x(d.x1) - wch_x(d.x0) - 1 >= 0) ? wch_x(d.x1) - wch_x(d.x0) - 1 : 0;
+                    })
+                    .attr("height", function (d) {
+                       return chart_height - wch_y(d.length);
+                    });
+
+             // Add & Rotate x labels
+             wch_svg.append("g")
+                    .attr("transform", "translate(0," + chart_height + ")")
+                    .call(d3.axisBottom(wch_x))
+                    .selectAll("text")
+                    .attr("y", 0)
+                    .attr("x", -25)
+                    .attr("dy", ".35em")
+                    .attr("transform", "rotate(270)")
+                    .style("text-anchor", "start");
+
+
+             // text label for the x axis
+             wch_svg.append("text")
+                    .attr("transform",
+                       "translate(" + (chart_width / 2) + " ," +
+                       (chart_height + chart_margins.top + 30) + ")")
+                    .style("text-anchor", "middle")
+                    .text("Weight (lbs)");
+
+             // add the y Axis
+             wch_svg.append("g")
+                    .call(d3.axisLeft(wch_y));
+          });
+       });
+    </script>
+</head>
+<body>
+
+<h1>DS 608 (Fall 2020): Module 5</h1>
+<h2>Donny Lofland</h2>
+<p>Source Code: <a href="https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5">https://github.com/djlofland/DATA608_VisualAnalytics/tree/master/module5</a></p>
+
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+        <h3>Part I - Reverse a Word</h3>
+        <p class="lead">In this example, we use JavaScript to reverse the order of the characters in a string that
+            you've provided. For example: </p>
+        <blockquote>characters -> sretcarahc</blockquote>
+        <p class="lead">Give it a try.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1"></span>
+            <label for="p1_input"></label><input id="p1_input" type="text" class="form-control"
+                placeholder="Enter some text"
+                aria-describedby="basic-addon1">
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button id="p1_button" type="submit"
+        ">reverse it!</button>
+    </div>
+    <div class="col-md-4"><label for="p1_output"></label><input id="p1_output" value="" disabled/></div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+        <h3>Part II - Numerical Multiples</h3>
+        <p class="lead">In this example, we use JavaScript to calculate and display the first 20 multiple of a number
+            you provide. Make sure to enter a number.</p>
+        <blockquote>5 -> 5, 10, 15, 20, 25, ... 100</blockquote>
+        <p class="lead">Give it a try.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2"></span>
+                <label for="p2_input"></label><input id="p2_input" type="number" class="form-control"
+                    placeholder="Enter a Number ..."
+                    aria-describedby="basic-addon2" size="30"/>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <button id="p2_button" type="submit">get multiples!</button>
+    </div>
+    <div class="col-md-4">
+        <div id="p2_output"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <hr/>
+        <h3>Part III - Presidential Physique</h3>
+        <p class="lead">In this example, choose a president from the drop down to see how their height and weight
+            measures up.</p>
+        <p class="lead">Give it a try.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="row">
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="p3_input" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                    Choose a President ...
+                    <span class="caret"></span>
+                </button>
+                <ul id="p3_input_dd" class="dropdown-menu" aria-labelledby="p3_input">
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <hr/>
+            <p>President: <b><span id="p3_pres_name"></span></b></p>
+            <p>&nbsp;&nbsp;&nbsp;Height: <b><span id="p3_pres_height"></span></b></p>
+            <p>&nbsp;&nbsp;&nbsp;Weight: <b><span id="p3_pres_weight"></span></b></p>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-4">
+                <div id="p3_hch_chart">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="p3_wch_chart">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
