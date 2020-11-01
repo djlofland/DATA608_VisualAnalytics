@@ -280,7 +280,7 @@
                 // Add  line on the chart to show where the president falls
                 d3.select("#pres_height_line").remove();
 
-                let x_h = chart_width * (president_data[pres_id]['Height'] - 60) / (80 - 60)
+                let x_h = chart_width * (president_data[pres_id]['Height'] - 60) / (80 - 60) + 5
 
                 hch_svg.append("line")
                        .attr("x1", x_h)
@@ -295,7 +295,7 @@
                 // Add  line on the chart to show where the president falls
                 d3.select("#pres_weight_line").remove();
 
-                let x_w = chart_width * (president_data[pres_id]['Weight'] - 100) / (350 - 100)
+                let x_w = chart_width * (president_data[pres_id]['Weight'] - 100) / (350 - 100) + 5
 
                 wch_svg.append("line")
                        .attr("x1", x_w)
